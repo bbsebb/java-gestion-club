@@ -4,8 +4,11 @@ package fr.hoenheimsports.gestionclub.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,12 +23,18 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Game {
+	@NotBlank(message = "Le code de la rencontre ne doit pas être vide")
+	@NotEmpty(message = "Le code de la rencontre ne doit pas être vide")
+	@NotNull(message = "Le code de la rencontre ne doit pas être vide")
+	@Length(message = "Le code d'une rencontre doit etre de 7 caractères", min = 7, max = 7)
 	@Id
+	@Column(nullable = false)
 	private String code;
 	@ManyToOne
 	@JoinColumn(name = "pool_id")
 	private Pool pool;
-	@Column(name="num_day")
+	@Positive(message = "Le jour de la rencontre doit être superieur à 0")
+	@Column(name = "num_day", nullable = false)
 	private int day;
 	@ManyToOne
 	@JoinColumn(name = "halle_id")
@@ -52,6 +61,10 @@ public class Game {
 	private Set<User> barmen = new HashSet<>();
 	@Embedded
 	private Score score;
-	private Date dateTime;
+
+	private LocalDateTime dateTime;
+
+	private boolean isPlayed;
+
 
 }

@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * @author bbseb
@@ -18,7 +20,11 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 public class Score {
 
+	@PositiveOrZero(message = "Le score ne peut etre négatif")
+	@Column(nullable = false)
 	private int scoreHomeTeam;
+	@PositiveOrZero(message = "Le score ne peut etre négatif")
+	@Column(nullable = false)
 	private int scoreVisitingTeam;
 
 

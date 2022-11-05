@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * @author bbseb
@@ -19,6 +22,7 @@ import javax.persistence.Embeddable;
 public class Address {
 
 	private String street;
+	@Column(nullable = false)
 	private int cp;
 	private String city;
 

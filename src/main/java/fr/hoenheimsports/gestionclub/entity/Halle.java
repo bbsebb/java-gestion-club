@@ -13,6 +13,9 @@ import javax.persistence.*;
  * @created 12-oct.-2022 23:22:50
  */
 @Entity
+@Table(name = "Halle", uniqueConstraints = {
+		@UniqueConstraint(name = "uc_halle_name_street_cp_city", columnNames = {"name", "street", "cp", "city"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

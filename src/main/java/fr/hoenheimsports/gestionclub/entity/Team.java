@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +17,9 @@ import java.util.Set;
  * @created 12-oct.-2022 23:22:50
  */
 @Entity
+@Table(name = "Team", uniqueConstraints = {
+		@UniqueConstraint(name = "uc_team_club_id_numteam", columnNames = {"club_id", "numTeam", "gender", "category_id"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,10 +27,14 @@ public class Team {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
+	@NotNull(message = "La catégorie d'une équipe ne doit pas être nul")
 	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private Category category;
+	@Column(nullable = false)
 	private char gender;
+	@Positive(message = "Le numéro d'une équipe doit être strictement supérieur à 0")
+	@Column(nullable = false)
 	private int numTeam;
 	@ManyToOne
 	@JoinColumn(name = "club_id")
