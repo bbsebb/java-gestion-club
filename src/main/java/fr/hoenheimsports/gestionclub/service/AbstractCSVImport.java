@@ -15,11 +15,12 @@ import org.springframework.core.io.Resource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
- @AllArgsConstructor
+@AllArgsConstructor
 abstract public class AbstractCSVImport implements CSVImport {
     final protected String[] header;
     final protected GameService GameService;
@@ -34,8 +35,7 @@ abstract public class AbstractCSVImport implements CSVImport {
     final protected ExtractInfoTeam extractorVisiting;
 
 
-
-     protected Map<String, Integer> getHeaderMap(String[] header) {
+    private Map<String, Integer> getHeaderMap(String[] header) {
         Map<String, Integer> headerMap = new Hashtable<>();
         for (int i = 0; i < this.header.length; i++) {
             headerMap.put(header[i], i);
@@ -43,12 +43,12 @@ abstract public class AbstractCSVImport implements CSVImport {
         return headerMap;
     }
 
-    protected List<String[]> csvFileToListLines(String resourceString) throws CsvException {
+    private List<String[]> csvFileToListLines(String resourceString) throws CsvException {
         List<String[]> csvLines;
         Resource resource = new ClassPathResource(resourceString);
         try (InputStreamReader reader = new InputStreamReader(new BOMInputStream(resource.getInputStream()))) {
             // Création du CSV READER
-            try(CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(';').build()).build()) {
+            try (CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(';').build()).build()) {
                 csvLines = csvReader.readAll();
             }
         } catch (FileNotFoundException fnfe) {
@@ -62,6 +62,28 @@ abstract public class AbstractCSVImport implements CSVImport {
             throw new CsvDataException("Fichier vide" + resourceString);
         }
         return csvLines;
+    }
+
+    abstract protected void extractLine(String[] line, Map<String, Integer> headerMap) throws CsvException;
+
+    public void extract(String resourceString) throws CsvException {
+        List<String[]> csvLines = this.csvFileToListLines(resourceString);
+
+        //Lecture entete
+        String[] header = csvLines.remove(0);
+
+        //Création d'une map nom entete - index pour retrouver facilement l'index
+        Map<String, Integer> headerMap = this.getHeaderMap(header);
+        //On verifie si l'header est correct
+        if (!Arrays.equals(header, this.header)) {
+            throw new CsvDataException("Les entêtes ne correspondent pas au entêtes attendues");
+        }
+
+        for (String[] line : csvLines) {
+
+            this.extractLine(line, headerMap);
+
+        }
     }
 
 

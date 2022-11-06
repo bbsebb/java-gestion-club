@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionException;
 
 import javax.validation.ConstraintViolationException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -59,84 +57,71 @@ public class CSVImportGamePlayedImpl extends AbstractCSVImport {
         super(HEADER, GameService, competitionService, poolService, refereeService, halleService, teamService, clubService, categoryService, extractorHome, extractorVisiting);
     }
 
-    public void extract(String resourceString) throws CsvException {
-        List<String[]> csvLines = this.csvFileToListLines(resourceString);
 
-        //Lecture entete
-        String[] header = csvLines.remove(0);
+    @Override
+    protected void extractLine(String[] line,Map<String, Integer> headerMap) throws CsvException {
+        try {
+            Competition competition = this.competitionService.createOrUpdate(line[headerMap.get("competition")]);
+            Pool pool = this.poolService.createOrUpdate(line[headerMap.get("num poule")], line[headerMap.get("poule")], competition);
 
-        //Création d'une map nom entete - index pour retrouver facilement l'index
-        Map<String, Integer> headerMap = this.getHeaderMap(header);
-        //On verifie si l'header est correct
-        if (!Arrays.equals(header, HEADER)) {
-            throw new CsvDataException("Les entêtes ne correspondent pas au entêtes attendues");
-        }
+            Address address = this.halleService.addressCreate(line[headerMap.get("adresse salle")], line[headerMap.get("CP")], line[headerMap.get("Ville")]);
+            Halle halle = this.halleService.createOrUpdate(line[headerMap.get("nom salle")], address);
 
-        for (String[] line : csvLines) {
+            Referee referee1 = this.refereeService.createOrUpdate(line[headerMap.get("arb1 designe")]);
+            Referee referee2 = this.refereeService.createOrUpdate(line[headerMap.get("arb2 designe")]);
 
-            try {
-                Competition competition = this.competitionService.createOrUpdate(line[headerMap.get("competition")]);
-                Pool pool = this.poolService.createOrUpdate(line[headerMap.get("num poule")], line[headerMap.get("poule")], competition);
+            Score score = new Score(0, 0);
+            FDME fdme = new FDME(null);
 
-                Address address = this.halleService.addressCreate(line[headerMap.get("adresse salle")], line[headerMap.get("CP")], line[headerMap.get("Ville")]);
-                Halle halle = this.halleService.createOrUpdate(line[headerMap.get("nom salle")], address);
+            extractorHome.setCsvNumPool(line[headerMap.get("num poule")]);
+            extractorHome.setCsvTeamName(line[headerMap.get("club rec")]);
+            extractorHome.extract();
 
-                Referee referee1 = this.refereeService.createOrUpdate(line[headerMap.get("arb1 designe")]);
-                Referee referee2 = this.refereeService.createOrUpdate(line[headerMap.get("arb2 designe")]);
+            extractorVisiting.setCsvNumPool(line[headerMap.get("num poule")]);
+            extractorVisiting.setCsvTeamName(line[headerMap.get("club vis")]);
+            extractorVisiting.extract();
 
-                Score score = new Score(0, 0);
-                FDME fdme = new FDME(null);
+            Club clubHome = this.clubService.save(line[headerMap.get("Num rec")], extractorHome.getClubName());
+            Club clubVisiting = this.clubService.save(line[headerMap.get("Num vis")], extractorVisiting.getClubName());
 
-                extractorHome.setCsvNumPool(line[headerMap.get("num poule")]);
-                extractorHome.setCsvTeamName(line[headerMap.get("club rec")]);
-                extractorHome.extract();
+            Category categoryHome = this.categoryService.createOrUpdate(extractorHome.getCategoryShortName(), extractorHome.getCategoryName());
+            Category categoryVisiting = this.categoryService.createOrUpdate(extractorVisiting.getCategoryShortName(), extractorVisiting.getCategoryName());
 
-                extractorVisiting.setCsvNumPool(line[headerMap.get("num poule")]);
-                extractorVisiting.setCsvTeamName(line[headerMap.get("club vis")]);
-                extractorVisiting.extract();
+            Team teamHome = this.teamService.createOrUpdate(clubHome, categoryHome, extractorHome.getGender(), extractorHome.getTeamNumber());
+            Team teamVisiting = this.teamService.createOrUpdate(clubVisiting, categoryVisiting, extractorVisiting.getGender(), extractorVisiting.getTeamNumber());
 
-                Club clubHome = this.clubService.save(line[headerMap.get("Num rec")], extractorHome.getClubName());
-                Club clubVisiting = this.clubService.save(line[headerMap.get("Num vis")], extractorVisiting.getClubName());
-
-                Category categoryHome = this.categoryService.createOrUpdate(extractorHome.getCategoryShortName(), extractorHome.getCategoryName());
-                Category categoryVisiting = this.categoryService.createOrUpdate(extractorVisiting.getCategoryShortName(), extractorVisiting.getCategoryName());
-
-                Team teamHome = this.teamService.createOrUpdate(clubHome, categoryHome, extractorHome.getGender(), extractorHome.getTeamNumber());
-                Team teamVisiting = this.teamService.createOrUpdate(clubVisiting, categoryVisiting, extractorVisiting.getGender(), extractorVisiting.getTeamNumber());
-
-                this.GameService.createOrUpdate(
-                        line[headerMap.get("code renc")],
-                        halle,
-                        fdme,
-                        score,
-                        line[headerMap.get("J")],
-                        line[headerMap.get("le")],
-                        line[headerMap.get("horaire")],
-                        pool,
-                        referee1,
-                        referee2,
-                        teamHome,
-                        teamVisiting,
-                        false
-                );
-            } catch (TransactionException te) {
-                if (te.getRootCause() instanceof ConstraintViolationException cve) {
-                    String errorMsg = "Incompatibilité des données du fichier CSV";
-                    if(cve.getConstraintViolations().stream().findFirst().isPresent()) {
-                        errorMsg = cve.getConstraintViolations().stream().findFirst().get().getMessage();
-                    }
-                    CSVImportGamePlayedImpl.log.error(errorMsg);
-                    throw new CsvDataException(errorMsg, te);
+            this.GameService.createOrUpdate(
+                    line[headerMap.get("code renc")],
+                    halle,
+                    fdme,
+                    score,
+                    line[headerMap.get("J")],
+                    line[headerMap.get("le")],
+                    line[headerMap.get("horaire")],
+                    pool,
+                    referee1,
+                    referee2,
+                    teamHome,
+                    teamVisiting,
+                    false
+            );
+        } catch (TransactionException te) {
+            if (te.getRootCause() instanceof ConstraintViolationException cve) {
+                String errorMsg = "Incompatibilité des données du fichier CSV";
+                if(cve.getConstraintViolations().stream().findFirst().isPresent()) {
+                    errorMsg = cve.getConstraintViolations().stream().findFirst().get().getMessage();
                 }
-            } catch (DataIntegrityViolationException de) {
-                String errorMsg = "Incompatibilité des données du fichier CSV avec la structure de la base de donnée";
-                if(de.getRootCause() != null) {
-                    errorMsg = de.getRootCause().getLocalizedMessage();
-                }
-                CSVImportGamePlayedImpl.log.error(errorMsg, de);
-                throw new CsvDataException("Incompatibilité des données du fichier CSV avec la structure de la base de donnée", de);
+                CSVImportGamePlayedImpl.log.error(errorMsg);
+                throw new CsvDataException(errorMsg, te);
             }
-
+        } catch (DataIntegrityViolationException de) {
+            String errorMsg = "Incompatibilité des données du fichier CSV avec la structure de la base de donnée";
+            if(de.getRootCause() != null) {
+                errorMsg = de.getRootCause().getLocalizedMessage();
+            }
+            CSVImportGamePlayedImpl.log.error(errorMsg, de);
+            throw new CsvDataException("Incompatibilité des données du fichier CSV avec la structure de la base de donnée", de);
         }
     }
+
 }
