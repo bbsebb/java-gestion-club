@@ -28,7 +28,7 @@ public class Team {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	@NotNull(message = "La catégorie d'une équipe ne doit pas être nul")
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "category_id")
 	private Category category;
 	@Column(nullable = false)
@@ -36,7 +36,7 @@ public class Team {
 	@Positive(message = "Le numéro d'une équipe doit être strictement supérieur à 0")
 	@Column(nullable = false)
 	private int numTeam;
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "club_id")
 	private Club club;
 

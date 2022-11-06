@@ -2,8 +2,6 @@ package fr.hoenheimsports.gestionclub.service;
 
 import fr.hoenheimsports.gestionclub.entity.*;
 
-import java.time.LocalDateTime;
-
 public interface GameService {
 
 

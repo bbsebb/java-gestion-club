@@ -1,43 +1,23 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvException;
 import fr.hoenheimsports.gestionclub.entity.*;
-import fr.hoenheimsports.gestionclub.repository.*;
+import fr.hoenheimsports.gestionclub.exception.csvimportexception.CsvDataException;
+import fr.hoenheimsports.gestionclub.exception.csvimportexception.CsvException;
 import fr.hoenheimsports.gestionclub.service.util.ExtractInfoTeam;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.input.BOMInputStream;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionException;
 
-import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import javax.validation.ConstraintViolationException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Service
-@Data
-@RequiredArgsConstructor
 @Log4j2
-public class CSVImportImpl implements CSVImport {
-    final private GameService GameService;
-    final private CompetitionService competitionService;
-    final private PoolService poolService;
-    final private RefereeService refereeService;
-    final private HalleService halleService;
-    final private TeamService teamService;
-    final private ClubService clubService;
-    final private CategoryService categoryService;
-    final private ExtractInfoTeam extractorHome;
-    final private ExtractInfoTeam extractorVisiting;
-
-
-    private final static String[] HEADER = {
+public class CSVImportGamePlayedImpl extends AbstractCSVImport {
+    protected static String[] HEADER = {
             "semaine",
             "num poule",
             "competition",
@@ -75,41 +55,26 @@ public class CSVImportImpl implements CSVImport {
     };
 
 
-    private List<String[]> CSVLines;
-
-
-    public void setResource(String resourceString) {
-        Resource resource = new ClassPathResource(resourceString);
-        try (InputStreamReader reader = new InputStreamReader(new BOMInputStream(resource.getInputStream()))) {
-            // Création du CSV READER
-            CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(';').build()).build();
-            this.CSVLines = csvReader.readAll();
-        } catch (FileNotFoundException fnfe) {
-            throw new RuntimeException(fnfe);
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        } catch (CsvException e) {
-            throw new RuntimeException(e);
-        }
+    public CSVImportGamePlayedImpl(GameService GameService, CompetitionService competitionService, PoolService poolService, RefereeService refereeService, HalleService halleService, TeamService teamService, ClubService clubService, CategoryService categoryService, ExtractInfoTeam extractorHome, ExtractInfoTeam extractorVisiting) {
+        super(HEADER, GameService, competitionService, poolService, refereeService, halleService, teamService, clubService, categoryService, extractorHome, extractorVisiting);
     }
 
-    public void run() throws Exception {
-        if (this.CSVLines == null || this.CSVLines.isEmpty()) {
-            throw new Exception();
-        }
+    public void extract(String resourceString) throws CsvException {
+        List<String[]> csvLines = this.csvFileToListLines(resourceString);
+
         //Lecture entete
-        String[] header = this.CSVLines.remove(0);
+        String[] header = csvLines.remove(0);
 
         //Création d'une map nom entete - index pour retrouver facilement l'index
-        Map<String, Integer> headerMap = new Hashtable<>();
-        for (int i = 0; i < HEADER.length; i++) {
-            headerMap.put(header[i], i);
-        }
+        Map<String, Integer> headerMap = this.getHeaderMap(header);
         //On verifie si l'header est correct
-        if (Arrays.equals(header, HEADER)) {
-            int i = 0;
-            for (String[] line : this.CSVLines) {
+        if (!Arrays.equals(header, HEADER)) {
+            throw new CsvDataException("Les entêtes ne correspondent pas au entêtes attendues");
+        }
 
+        for (String[] line : csvLines) {
+
+            try {
                 Competition competition = this.competitionService.createOrUpdate(line[headerMap.get("competition")]);
                 Pool pool = this.poolService.createOrUpdate(line[headerMap.get("num poule")], line[headerMap.get("poule")], competition);
 
@@ -139,8 +104,7 @@ public class CSVImportImpl implements CSVImport {
                 Team teamHome = this.teamService.createOrUpdate(clubHome, categoryHome, extractorHome.getGender(), extractorHome.getTeamNumber());
                 Team teamVisiting = this.teamService.createOrUpdate(clubVisiting, categoryVisiting, extractorVisiting.getGender(), extractorVisiting.getTeamNumber());
 
-
-                Game game = this.GameService.createOrUpdate(
+                this.GameService.createOrUpdate(
                         line[headerMap.get("code renc")],
                         halle,
                         fdme,
@@ -155,7 +119,24 @@ public class CSVImportImpl implements CSVImport {
                         teamVisiting,
                         false
                 );
+            } catch (TransactionException te) {
+                if (te.getRootCause() instanceof ConstraintViolationException cve) {
+                    String errorMsg = "Incompatibilité des données du fichier CSV";
+                    if(cve.getConstraintViolations().stream().findFirst().isPresent()) {
+                        errorMsg = cve.getConstraintViolations().stream().findFirst().get().getMessage();
+                    }
+                    CSVImportGamePlayedImpl.log.error(errorMsg);
+                    throw new CsvDataException(errorMsg, te);
+                }
+            } catch (DataIntegrityViolationException de) {
+                String errorMsg = "Incompatibilité des données du fichier CSV avec la structure de la base de donnée";
+                if(de.getRootCause() != null) {
+                    errorMsg = de.getRootCause().getLocalizedMessage();
+                }
+                CSVImportGamePlayedImpl.log.error(errorMsg, de);
+                throw new CsvDataException("Incompatibilité des données du fichier CSV avec la structure de la base de donnée", de);
             }
+
         }
     }
 }

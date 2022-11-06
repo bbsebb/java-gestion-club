@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +32,8 @@ public class Game {
 	@Id
 	@Column(nullable = false)
 	private String code;
-	@ManyToOne
+	@NotNull(message = "Une rencontre doit avoir une poule")
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "pool_id")
 	private Pool pool;
 	@Positive(message = "Le jour de la rencontre doit être superieur à 0")
@@ -45,10 +48,12 @@ public class Game {
 	@ManyToOne
 	@JoinColumn(name = "referee_2_id")
 	private Referee referee2;
-	@ManyToOne
+	@NotNull
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "home_team_id")
 	private Team homeTeam;
-	@ManyToOne
+	@NotNull
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "visiting_team_id")
 	private Team visitingTeam;
 	@Embedded

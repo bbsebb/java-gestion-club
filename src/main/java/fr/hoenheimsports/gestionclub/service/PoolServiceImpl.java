@@ -4,10 +4,6 @@ import fr.hoenheimsports.gestionclub.entity.Competition;
 import fr.hoenheimsports.gestionclub.entity.Pool;
 import fr.hoenheimsports.gestionclub.repository.PoolRepository;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

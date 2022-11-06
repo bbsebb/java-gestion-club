@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author bbseb
@@ -23,7 +24,8 @@ public class Pool {
 	@Id
 	private String num;
 	private String name;
-	@ManyToOne
+	@NotNull
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "competition_id")
 	private Competition competition;
 
