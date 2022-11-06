@@ -46,6 +46,35 @@ public class GameServiceImpl implements GameService {
         return this.gameRepository.save(game);
     }
 
+    @Override
+    public Game createOrUpdate(String code,
+                               FDME fdme,
+                               Score score,
+                               String day,
+                               String date,
+                               String time,
+                               Pool pool,
+                               Referee ref1,
+                               Referee ref2,
+                               Team homeTeam,
+                               Team visitingTeam,
+                               boolean isPlayed
+    ) {
+        Optional<Game> optionalGame = this.gameRepository.findById(code);
+        Game game = optionalGame.orElseGet(() -> this.gameCreate(code));
+        game.setFdme(fdme);
+        game.setScore(score);
+        game.setDay(Integer.parseInt(day));
+        game.setDateTime(this.dateConversion(date,time));
+        game.setPool(pool);
+        game.setReferee1(ref1);
+        game.setReferee2(ref2);
+        game.setVisitingTeam(visitingTeam);
+        game.setHomeTeam(homeTeam);
+        game.setPlayed(isPlayed);
+        return this.gameRepository.save(game);
+    }
+
     private Game gameCreate(String code) {
         Game newHGame = new Game();
         newHGame.setCode(code);

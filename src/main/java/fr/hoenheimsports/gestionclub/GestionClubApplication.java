@@ -1,5 +1,6 @@
 package fr.hoenheimsports.gestionclub;
 
+import fr.hoenheimsports.gestionclub.service.CSVImportGameNoPlayedImpl;
 import fr.hoenheimsports.gestionclub.service.CSVImportGamePlayedImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -16,13 +17,17 @@ public class GestionClubApplication implements CommandLineRunner {
 
 
     @Autowired
-    CSVImportGamePlayedImpl importCsv;
+    CSVImportGameNoPlayedImpl importCsvNoPlayedGames;
+
+    @Autowired
+    CSVImportGamePlayedImpl importCsvPlayedGames;
 
 
     @Override
     public void run(String... args) throws Exception {
 
-        importCsv.extract("static/test.csv");
+       importCsvNoPlayedGames.extract("static/test.csv");
+        importCsvPlayedGames.extract("static/test2.csv");
 
     }
 }

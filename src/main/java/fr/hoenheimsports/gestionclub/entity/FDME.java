@@ -1,11 +1,11 @@
 package fr.hoenheimsports.gestionclub.entity;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -16,10 +16,19 @@ import java.net.URL;
 @Embeddable
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class FDME {
 
-	private URL url;
+    private URL url;
 
+    public FDME(URL url) {
+        this.url = url;
+    }
 
+    public FDME(String url) throws MalformedURLException {
+        if (url == null || url.isBlank()) {
+            this.url = null;
+        } else {
+            this.url = new URL(url);
+        }
+    }
 }

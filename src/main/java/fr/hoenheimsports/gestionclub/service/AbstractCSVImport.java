@@ -74,6 +74,7 @@ abstract public class AbstractCSVImport implements CSVImport {
 
         //Création d'une map nom entete - index pour retrouver facilement l'index
         Map<String, Integer> headerMap = this.getHeaderMap(header);
+
         //On verifie si l'header est correct
         if (!Arrays.equals(header, this.header)) {
             throw new CsvDataException("Les entêtes ne correspondent pas au entêtes attendues");

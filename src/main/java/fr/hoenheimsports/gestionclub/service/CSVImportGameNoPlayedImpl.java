@@ -10,12 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionException;
 
 import javax.validation.ConstraintViolationException;
-import java.net.MalformedURLException;
 import java.util.Map;
 
 @Service
 @Log4j2
-public class CSVImportGamePlayedImpl extends AbstractCSVImport implements CSVImportGamePlayed{
+public class CSVImportGameNoPlayedImpl extends AbstractCSVImport implements CSVImportGameNoPlayed {
     protected static final String[] HEADER = {
             "semaine",
             "num poule",
@@ -26,51 +25,53 @@ public class CSVImportGamePlayedImpl extends AbstractCSVImport implements CSVImp
             "horaire",
             "club rec",
             "club vis",
-            "sc rec",
-            "sc vis",
-            "fdme rec",
-            "fdme vis",
-            "pen. rec",
-            "pen. vis",
-            "forf. rec",
-            "forf. vis",
+            "club hote",
             "arb1 designe",
             "arb2 designe",
-            "arb1 sifle",
-            "arb2 sifle",
-            "secretaire",
-            "chronometreur",
             "observateur",
             "delegue",
-            "resp salle",
-            "tuteur table",
             "code renc",
+            "nom salle",
+            "adresse salle",
+            "CP",
+            "Ville",
+            "colle",
+            "Coul. Rec",
+            "Coul. Gard. Rec",
+            "Coul. Vis",
+            "Coul. Gard. Vis",
+            "Ent. Rec",
+            "Tel Ent. Rec",
+            "Corresp. Rec",
+            "Tel Corresp. Rec",
+            "Ent. Vis",
+            "Tel Ent. Vis",
+            "Corresp. Vis",
+            "Tel Corresp. Vis",
             "Num rec",
-            "Num vis",
-            "Etat",
-            "Forfait",
-            "Penalite",
-            "FDME",
-            "Date Arrivee"
+            "Num vis"
     };
 
 
-    public CSVImportGamePlayedImpl(GameService GameService, CompetitionService competitionService, PoolService poolService, RefereeService refereeService, HalleService halleService, TeamService teamService, ClubService clubService, CategoryService categoryService, ExtractInfoTeam extractorHome, ExtractInfoTeam extractorVisiting) {
+    public CSVImportGameNoPlayedImpl(GameService GameService, CompetitionService competitionService, PoolService poolService, RefereeService refereeService, HalleService halleService, TeamService teamService, ClubService clubService, CategoryService categoryService, ExtractInfoTeam extractorHome, ExtractInfoTeam extractorVisiting) {
         super(HEADER, GameService, competitionService, poolService, refereeService, halleService, teamService, clubService, categoryService, extractorHome, extractorVisiting);
     }
 
 
     @Override
-    protected void extractLine(String[] line, Map<String, Integer> headerMap) throws CsvException {
+    protected void extractLine(String[] line,Map<String, Integer> headerMap) throws CsvException {
         try {
             Competition competition = this.competitionService.createOrUpdate(line[headerMap.get("competition")]);
             Pool pool = this.poolService.createOrUpdate(line[headerMap.get("num poule")], line[headerMap.get("poule")], competition);
 
-            Referee referee1 = this.refereeService.createOrUpdate(line[headerMap.get("arb1 sifle")]);
-            Referee referee2 = this.refereeService.createOrUpdate(line[headerMap.get("arb2 sifle")]);
+            Address address = this.halleService.addressCreate(line[headerMap.get("adresse salle")], line[headerMap.get("CP")], line[headerMap.get("Ville")]);
+            Halle halle = this.halleService.createOrUpdate(line[headerMap.get("nom salle")], address);
 
-            Score score = new Score(line[headerMap.get("fdme rec")], line[headerMap.get("fdme vis")]);
-            FDME fdme = new FDME(line[headerMap.get("FDME")]);
+            Referee referee1 = this.refereeService.createOrUpdate(line[headerMap.get("arb1 designe")]);
+            Referee referee2 = this.refereeService.createOrUpdate(line[headerMap.get("arb2 designe")]);
+
+            Score score = new Score(0, 0);
+            FDME fdme = new FDME();
 
             extractorHome.setCsvNumPool(line[headerMap.get("num poule")]);
             extractorHome.setCsvTeamName(line[headerMap.get("club rec")]);
@@ -91,6 +92,7 @@ public class CSVImportGamePlayedImpl extends AbstractCSVImport implements CSVImp
 
             this.GameService.createOrUpdate(
                     line[headerMap.get("code renc")],
+                    halle,
                     fdme,
                     score,
                     line[headerMap.get("J")],
@@ -101,28 +103,24 @@ public class CSVImportGamePlayedImpl extends AbstractCSVImport implements CSVImp
                     referee2,
                     teamHome,
                     teamVisiting,
-                    true
+                    false
             );
         } catch (TransactionException te) {
             if (te.getRootCause() instanceof ConstraintViolationException cve) {
                 String errorMsg = "Incompatibilité des données du fichier CSV";
-                if (cve.getConstraintViolations().stream().findFirst().isPresent()) {
+                if(cve.getConstraintViolations().stream().findFirst().isPresent()) {
                     errorMsg = cve.getConstraintViolations().stream().findFirst().get().getMessage();
                 }
-                CSVImportGamePlayedImpl.log.error(errorMsg);
+                CSVImportGameNoPlayedImpl.log.error(errorMsg);
                 throw new CsvDataException(errorMsg, te);
             }
         } catch (DataIntegrityViolationException de) {
             String errorMsg = "Incompatibilité des données du fichier CSV avec la structure de la base de donnée";
-            if (de.getRootCause() != null) {
+            if(de.getRootCause() != null) {
                 errorMsg = de.getRootCause().getLocalizedMessage();
             }
-            CSVImportGamePlayedImpl.log.error(errorMsg, de);
+            CSVImportGameNoPlayedImpl.log.error(errorMsg, de);
             throw new CsvDataException("Incompatibilité des données du fichier CSV avec la structure de la base de donnée", de);
-        } catch(NumberFormatException nfe) {
-            throw new CsvDataException("La colonne fdme score du fichier CSV n'est pas compatible avec un nombre");
-        } catch(MalformedURLException mfe) {
-            throw new CsvDataException("La colonne FDME devrait être une url valide");
         }
     }
 
