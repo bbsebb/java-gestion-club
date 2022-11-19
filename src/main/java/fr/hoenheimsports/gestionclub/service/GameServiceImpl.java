@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,6 +74,11 @@ public class GameServiceImpl implements GameService {
         game.setHomeTeam(homeTeam);
         game.setPlayed(isPlayed);
         return this.gameRepository.save(game);
+    }
+
+    @Override
+    public List<Game> findAll() {
+        return this.gameRepository.findAll();
     }
 
     private Game gameCreate(String code) {

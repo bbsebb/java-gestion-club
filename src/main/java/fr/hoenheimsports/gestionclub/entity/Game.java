@@ -1,6 +1,8 @@
 package fr.hoenheimsports.gestionclub.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,10 +51,12 @@ public class Game {
 	@JoinColumn(name = "referee_2_id")
 	private Referee referee2;
 	@NotNull
+	@JsonIgnoreProperties({"homeGames","visitingGames"})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "home_team_id")
 	private Team homeTeam;
 	@NotNull
+	@JsonIgnoreProperties({"homeGames","visitingGames"})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "visiting_team_id")
 	private Team visitingTeam;

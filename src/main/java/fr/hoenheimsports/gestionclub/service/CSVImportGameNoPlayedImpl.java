@@ -12,9 +12,9 @@ import org.springframework.transaction.TransactionException;
 import javax.validation.ConstraintViolationException;
 import java.util.Map;
 
-@Service
+@Service("noPLayed")
 @Log4j2
-public class CSVImportGameNoPlayedImpl extends AbstractCSVImport implements CSVImportGameNoPlayed {
+public class CSVImportGameNoPlayedImpl extends AbstractCSVImport {
     protected static final String[] HEADER = {
             "semaine",
             "num poule",

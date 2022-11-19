@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,17 +27,21 @@ public class User {
 	private long id;
 	private String name;
 	private String forename;
+	@Email(message = "l'email n'a pas une forme correcte")
 	private String email;
-	private long password;
+
+	private String password;
 	private String tel;
 	private URL picture;
-	@ManyToOne
-	@JoinColumn(name = "role_id")
-	public Role role;
+
+	@ManyToMany
+	public Set<Role> roles = new HashSet();
 	@ManyToMany(mappedBy = "barmen")
-	private Set<Game> barmanGames;
+	private Set<Game> barmanGames = new HashSet();
 
 
+	public void addRole(Role r) {
 
-
+		this.roles.add(r);
+	}
 }

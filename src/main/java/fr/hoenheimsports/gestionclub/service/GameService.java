@@ -2,6 +2,8 @@ package fr.hoenheimsports.gestionclub.service;
 
 import fr.hoenheimsports.gestionclub.entity.*;
 
+import java.util.List;
+
 public interface GameService {
 
 
@@ -34,4 +36,6 @@ public interface GameService {
                         Team visitingTeam,
                         boolean isPlayed
     );
+
+    List<Game> findAll();
 }

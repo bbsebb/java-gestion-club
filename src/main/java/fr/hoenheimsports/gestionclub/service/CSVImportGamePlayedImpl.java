@@ -13,9 +13,9 @@ import javax.validation.ConstraintViolationException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
-@Service
+@Service("played")
 @Log4j2
-public class CSVImportGamePlayedImpl extends AbstractCSVImport implements CSVImportGamePlayed{
+public class CSVImportGamePlayedImpl extends AbstractCSVImport {
     protected static final String[] HEADER = {
             "semaine",
             "num poule",
