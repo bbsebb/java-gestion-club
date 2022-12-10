@@ -1,6 +1,6 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import fr.hoenheimsports.gestionclub.entity.Club;
+import fr.hoenheimsports.gestionclub.model.Club;
 import fr.hoenheimsports.gestionclub.repository.ClubRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

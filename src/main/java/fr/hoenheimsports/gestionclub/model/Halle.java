@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.entity;
+package fr.hoenheimsports.gestionclub.model;
 
 
 import lombok.AllArgsConstructor;
@@ -13,16 +13,20 @@ import javax.persistence.*;
  * @created 12-oct.-2022 23:22:50
  */
 @Entity
+@Table(name = "Halle", uniqueConstraints = {
+		@UniqueConstraint(name = "uc_halle_name_street_cp_city", columnNames = {"name", "street", "cp", "city"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Referee {
+public class Halle {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-
-	@Column(unique = true)
 	private String name;
+	@Embedded
+	private Address address;
+	private String glue;
 
 
 }

@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.service.util;
+package fr.hoenheimsports.gestionclub.service.csvimport;
 
 import fr.hoenheimsports.gestionclub.exception.csvimportexception.CsvDataException;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @Service
 @Scope("prototype")
-public class ExtractInfoTeam {
+public class InfoTeamExtract {
     final static String REGEX = "([-/a-zA-Z ]+)(?: (?:(?:[U\\-](\\d{2})[MF]|(?:SM|SF)|)(\\d?))?|(?>\\(.*\\))?$)";
     /*
         *** REGEX ***

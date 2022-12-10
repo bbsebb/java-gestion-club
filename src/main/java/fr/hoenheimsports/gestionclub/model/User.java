@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.entity;
+package fr.hoenheimsports.gestionclub.model;
 
 
 import lombok.AllArgsConstructor;
@@ -41,7 +41,7 @@ public class User {
 
 
 	public void addRole(Role r) {
-
 		this.roles.add(r);
 	}
+
 }

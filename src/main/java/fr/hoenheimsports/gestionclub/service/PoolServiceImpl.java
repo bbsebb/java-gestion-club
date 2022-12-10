@@ -1,7 +1,7 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import fr.hoenheimsports.gestionclub.entity.Competition;
-import fr.hoenheimsports.gestionclub.entity.Pool;
+import fr.hoenheimsports.gestionclub.model.Competition;
+import fr.hoenheimsports.gestionclub.model.Pool;
 import fr.hoenheimsports.gestionclub.repository.PoolRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,11 +17,11 @@ public class PoolServiceImpl implements PoolService {
 
 
     @Override
-    public Pool createOrUpdate(String num, String name, Competition c) {
+    public Pool createOrUpdate(String num, String name) {
         Optional<Pool> optionalPool = this.poolRepository.findById(num);
         Pool pool = optionalPool.orElseGet(() -> this.poolCreate(num));
         pool.setName(name);
-        pool.setCompetition(c);
+
         return this.poolRepository.save(pool);
     }
 

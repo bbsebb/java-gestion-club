@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.entity;
+package fr.hoenheimsports.gestionclub.model;
 
 
 import lombok.AllArgsConstructor;

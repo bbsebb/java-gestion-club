@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.entity;
+package fr.hoenheimsports.gestionclub.model;
 
 
 import lombok.AllArgsConstructor;
@@ -39,6 +39,11 @@ public class Team {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "club_id")
 	private Club club;
+	@Embedded
+	private TeamsColor teamsColor;
+	@ManyToOne
+	private Contributor coach;
+
 
 	@OneToMany(mappedBy = "homeTeam")
 	private Set<Game> homeGames = new HashSet<>();

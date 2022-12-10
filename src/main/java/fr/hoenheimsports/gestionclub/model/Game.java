@@ -1,7 +1,6 @@
-package fr.hoenheimsports.gestionclub.entity;
+package fr.hoenheimsports.gestionclub.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,32 +35,31 @@ public class Game {
 	private String code;
 	@NotNull(message = "Une rencontre doit avoir une poule")
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "pool_id")
-	private Pool pool;
+	@JoinColumn(name = "competition_id")
+	private Competition competition;
 	@Positive(message = "Le jour de la rencontre doit être superieur à 0")
 	@Column(name = "num_day", nullable = false)
 	private int day;
 	@ManyToOne
-	@JoinColumn(name = "halle_id")
 	private Halle halle;
 	@ManyToOne
-	@JoinColumn(name = "referee_1_id")
-	private Referee referee1;
+	private Contributor referee1;
 	@ManyToOne
-	@JoinColumn(name = "referee_2_id")
-	private Referee referee2;
+	private Contributor referee2;
+	@ManyToOne
+	private Contributor realReferee1;
+	@ManyToOne
+	private Contributor realReferee2;
 	@NotNull
 	@JsonIgnoreProperties({"homeGames","visitingGames"})
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "home_team_id")
 	private Team homeTeam;
 	@NotNull
-	@JsonIgnoreProperties({"homeGames","visitingGames"})
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "visiting_team_id")
 	private Team visitingTeam;
 	@Embedded
 	private FDME fdme;
+
 
 	@ManyToMany()
 	@JoinTable(name = "game_barmen",

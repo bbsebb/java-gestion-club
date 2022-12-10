@@ -1,6 +1,6 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import fr.hoenheimsports.gestionclub.entity.*;
+import fr.hoenheimsports.gestionclub.model.*;
 import fr.hoenheimsports.gestionclub.repository.GameRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,9 +24,9 @@ public class GameServiceImpl implements GameService {
                                String day,
                                String date,
                                String time,
-                               Pool pool,
-                               Referee ref1,
-                               Referee ref2,
+                               Competition competition,
+                               Contributor ref1,
+                               Contributor ref2,
                                Team homeTeam,
                                Team visitingTeam,
                                boolean isPlayed
@@ -38,7 +38,7 @@ public class GameServiceImpl implements GameService {
         game.setScore(score);
         game.setDay(Integer.parseInt(day));
         game.setDateTime(this.dateConversion(date,time));
-        game.setPool(pool);
+        game.setCompetition(competition);
         game.setReferee1(ref1);
         game.setReferee2(ref2);
         game.setVisitingTeam(visitingTeam);
@@ -54,9 +54,9 @@ public class GameServiceImpl implements GameService {
                                String day,
                                String date,
                                String time,
-                               Pool pool,
-                               Referee ref1,
-                               Referee ref2,
+                               Competition competition,
+                               Contributor ref1,
+                               Contributor ref2,
                                Team homeTeam,
                                Team visitingTeam,
                                boolean isPlayed
@@ -67,7 +67,7 @@ public class GameServiceImpl implements GameService {
         game.setScore(score);
         game.setDay(Integer.parseInt(day));
         game.setDateTime(this.dateConversion(date,time));
-        game.setPool(pool);
+        game.setCompetition(competition);
         game.setReferee1(ref1);
         game.setReferee2(ref2);
         game.setVisitingTeam(visitingTeam);

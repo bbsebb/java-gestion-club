@@ -1,6 +1,6 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import fr.hoenheimsports.gestionclub.entity.User;
+import fr.hoenheimsports.gestionclub.model.User;
 
 import java.util.List;
 

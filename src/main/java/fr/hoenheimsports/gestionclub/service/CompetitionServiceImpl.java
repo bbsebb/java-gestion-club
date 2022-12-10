@@ -1,10 +1,9 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import fr.hoenheimsports.gestionclub.entity.Competition;
+import fr.hoenheimsports.gestionclub.model.Competition;
+import fr.hoenheimsports.gestionclub.model.Pool;
 import fr.hoenheimsports.gestionclub.repository.CompetitionRepository;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,14 +12,17 @@ import java.util.Optional;
 public class CompetitionServiceImpl implements CompetitionService {
     final private CompetitionRepository competitionRepository;
 
-    public Competition createOrUpdate(String name) {
+    @Override
+    public Competition createOrUpdate(String name, Pool pool) {
         Optional<Competition> optionalCompetition = this.competitionRepository.findByName(name);
-        return optionalCompetition.orElseGet(() -> this.competitionCreate(name));
+        Competition comp = optionalCompetition.orElseGet(() -> this.competitionCreate(name));
+        comp.setPool(pool);
+        return competitionRepository.save(comp);
     }
 
     private Competition competitionCreate(String name) {
         Competition newCompetition = new Competition();
         newCompetition.setName(name);
-        return competitionRepository.save(newCompetition);
+        return  newCompetition;
     }
 }

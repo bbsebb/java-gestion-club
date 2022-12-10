@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.service;
+package fr.hoenheimsports.gestionclub.service.csvimport;
 
 import fr.hoenheimsports.gestionclub.exception.csvimportexception.CsvException;
 

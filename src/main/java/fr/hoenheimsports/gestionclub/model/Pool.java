@@ -1,4 +1,4 @@
-package fr.hoenheimsports.gestionclub.entity;
+package fr.hoenheimsports.gestionclub.model;
 
 
 import lombok.AllArgsConstructor;
@@ -24,10 +24,7 @@ public class Pool {
 	@Id
 	private String num;
 	private String name;
-	@NotNull
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "competition_id")
-	private Competition competition;
+
 
 
 }

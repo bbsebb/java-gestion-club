@@ -1,8 +1,9 @@
 package fr.hoenheimsports.gestionclub;
 
-import fr.hoenheimsports.gestionclub.entity.Role;
-import fr.hoenheimsports.gestionclub.entity.User;
+import fr.hoenheimsports.gestionclub.model.Role;
+import fr.hoenheimsports.gestionclub.model.User;
 import fr.hoenheimsports.gestionclub.service.*;
+import fr.hoenheimsports.gestionclub.service.csvimport.CSVImport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;

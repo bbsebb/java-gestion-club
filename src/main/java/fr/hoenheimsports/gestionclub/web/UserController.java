@@ -1,8 +1,6 @@
 package fr.hoenheimsports.gestionclub.web;
 
-import fr.hoenheimsports.gestionclub.entity.Game;
-import fr.hoenheimsports.gestionclub.entity.User;
-import fr.hoenheimsports.gestionclub.service.GameService;
+import fr.hoenheimsports.gestionclub.model.User;
 import fr.hoenheimsports.gestionclub.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;

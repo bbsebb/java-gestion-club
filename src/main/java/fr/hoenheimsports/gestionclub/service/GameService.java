@@ -1,6 +1,6 @@
 package fr.hoenheimsports.gestionclub.service;
 
-import fr.hoenheimsports.gestionclub.entity.*;
+import fr.hoenheimsports.gestionclub.model.*;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ public interface GameService {
                         String day,
                         String date,
                         String time,
-                        Pool pool,
-                        Referee ref1,
-                        Referee ref2,
+                        Competition competition,
+                        Contributor ref1,
+                        Contributor ref2,
                         Team homeTeam,
                         Team visitingTeam,
                         boolean isPlayed
@@ -29,9 +29,9 @@ public interface GameService {
                         String day,
                         String date,
                         String time,
-                        Pool pool,
-                        Referee ref1,
-                        Referee ref2,
+                        Competition competition,
+                        Contributor ref1,
+                        Contributor ref2,
                         Team homeTeam,
                         Team visitingTeam,
                         boolean isPlayed

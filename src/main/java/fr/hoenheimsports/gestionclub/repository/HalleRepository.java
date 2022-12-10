@@ -1,8 +1,7 @@
 package fr.hoenheimsports.gestionclub.repository;
 
-import com.fasterxml.jackson.annotation.OptBoolean;
-import fr.hoenheimsports.gestionclub.entity.Address;
-import fr.hoenheimsports.gestionclub.entity.Halle;
+import fr.hoenheimsports.gestionclub.model.Address;
+import fr.hoenheimsports.gestionclub.model.Halle;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
