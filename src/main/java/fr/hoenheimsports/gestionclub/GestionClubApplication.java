@@ -1,9 +1,10 @@
 package fr.hoenheimsports.gestionclub;
 
-import fr.hoenheimsports.gestionclub.model.Role;
-import fr.hoenheimsports.gestionclub.model.User;
-import fr.hoenheimsports.gestionclub.service.*;
-import fr.hoenheimsports.gestionclub.service.csvimport.CSVImport;
+import fr.hoenheimsports.gestionclub.game.service.RoleService;
+import fr.hoenheimsports.gestionclub.user.model.Role;
+import fr.hoenheimsports.gestionclub.user.model.User;
+import fr.hoenheimsports.gestionclub.csvimport.service.CSVImport;
+import fr.hoenheimsports.gestionclub.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -20,11 +21,11 @@ public class GestionClubApplication implements CommandLineRunner {
 
 
     @Autowired
-            @Qualifier("noPLayed")
+            @Qualifier("NoPlayed")
     CSVImport importCsvNoPlayedGames;
 
     @Autowired
-    @Qualifier("played")
+    @Qualifier("Played")
     CSVImport importCsvPlayedGames;
 
     @Autowired
